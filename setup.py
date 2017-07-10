@@ -45,12 +45,7 @@ packages = [
     "scanomatic.models",
     "scanomatic.models.factories",
     "scanomatic.io",
-    "scanomatic.io.xml",
-    "scanomatic.qc",
     "scanomatic.server",
-    "scanomatic.image_analysis",
-    "scanomatic.data_processing",
-    "scanomatic.data_processing.phases",
     "scanomatic.util",
     "scanomatic.ui_server"
 ]

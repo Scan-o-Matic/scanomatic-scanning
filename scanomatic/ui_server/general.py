@@ -19,10 +19,8 @@ from scanomatic.io.paths import Paths
 from scanomatic.io.logger import Logger, parse_log_file
 from scanomatic.models.factories.scanning_factory import ScanningModelFactory
 from scipy.misc import toimage
-from scanomatic.image_analysis.first_pass_image import FixtureImage
 from scanomatic.models.fixture_models import (
     GrayScaleAreaModel, FixturePlateModel)
-from scanomatic.image_analysis.image_grayscale import is_valid_grayscale
 
 _safe_dir = re.compile(
     r"^[A-Za-z_0-9.%/ \\]*$" if os.sep == "\\" else r"^[A-Za-z_0-9.%/ ]*$")
@@ -116,14 +114,6 @@ def get_area_too_large_for_grayscale(grayscale_area_model):
                 (grayscale_area_model.y2 - grayscale_area_model.y1)
 
     return area_size > _TOO_LARGE_GRAYSCALE_AREA
-
-
-def get_grayscale_is_valid(values, grayscale):
-
-    if values is None:
-        return False
-
-    return is_valid_grayscale(grayscale['targets'], values)
 
 
 def usable_plates(plates):
@@ -334,14 +324,6 @@ def get_fixture_image_by_name(name, ext="tiff"):
     fixture_file = Paths().get_fixture_path(name)
     image_path = os.path.extsep.join((fixture_file, ext))
     return get_fixture_image(name, image_path)
-
-
-def get_fixture_image(name, image_path):
-
-    fixture = FixtureImage(reference_overwrite_mode=True)
-    fixture.name = name
-    fixture.set_image(image_path=image_path)
-    return fixture
 
 
 def pad_decode_base64(data):

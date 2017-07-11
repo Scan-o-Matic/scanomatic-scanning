@@ -6,8 +6,6 @@ import io
 from itertools import chain
 from flask import (
     send_file, jsonify, render_template)
-from werkzeug.datastructures import FileStorage
-import numpy as np
 import zipfile
 from urllib import unquote, quote
 from types import StringTypes
@@ -337,37 +335,6 @@ def remove_pad_decode_base64(data):
 
     remainder = len(data) % 4
     return base64.decodestring(data[:-remainder if remainder else 4])
-
-
-def usable_markers(markers, image):
-
-    def marker_inside_image(marker):
-        """Compares marker to image shape
-
-        Note that image shape comes in y, x order while markers come in x, y order
-
-        Args:
-            marker: (x, y) coordinates
-        """
-        val = (marker > 0).all() and marker[0] < image.shape[1] and marker[1] < image.shape[0]
-        if not val:
-            _logger.error("Marker {marker} is outside image {shape}".format(marker=marker, shape=image.shape))
-        return val
-
-    try:
-        markers_array = np.array(markers, dtype=float)
-    except ValueError:
-        return False
-
-    if markers_array.ndim != 2 or markers_array.shape[0] < 3 or markers_array.shape[1] != 2:
-        _logger.error("Markers have bad shape {markers}".format(markers=markers))
-        return False
-
-    if len(set(map(tuple, markers_array))) != len(markers):
-        _logger.error("Some marker is duplicated {markers}".format(markers=markers))
-        return False
-
-    return all(marker_inside_image(marker) for marker in markers_array)
 
 
 def split_areas_into_grayscale_and_plates(areas):

@@ -6,26 +6,16 @@
 #
 chardet==3.0.2
 click==6.7                # via flask
-cycler==0.10.0            # via matplotlib
 enum34==1.1.6
 flask-cors==3.0.2
 flask==0.12.1
-functools32==3.2.3.post2  # via matplotlib
 itsdangerous==0.24        # via flask
 jinja2==2.9.6             # via flask
 markupsafe==1.0           # via jinja2
-matplotlib==2.0.1
-numpy==1.12.1
-olefile==0.44             # via pillow
-pillow==4.1.1
 psutil==5.2.2
-pyparsing==2.2.0          # via matplotlib
-python-dateutil==2.6.0    # via matplotlib
-pytz==2017.2              # via matplotlib
 requests==2.14.1
 setproctitle==1.1.10
 sh==1.12.13
-six==1.10.0               # via cycler, flask-cors, matplotlib, python-dateutil
-subprocess32==3.2.7       # via matplotlib
+six==1.10.0               # via flask-cors
 uuid==1.30
 werkzeug==0.12.1          # via flask

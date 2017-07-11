@@ -2,7 +2,6 @@ import scanomatic.generics.model as model
 import scanomatic.generics.decorators as decorators
 from scanomatic.generics.enums import CycleEnum
 from enum import Enum
-import numpy as np
 
 
 class JOB_TYPE(CycleEnum):
@@ -24,7 +23,7 @@ class JOB_TYPE(CycleEnum):
     @property
     def next(self):
 
-        next_int_val = (1 + np.round(self.int_value/10.)) * 10
+        next_int_val = (1 + round(self.int_value/10.)) * 10
         return self.get_by_int_representation(next_int_val)
 
     @classmethod

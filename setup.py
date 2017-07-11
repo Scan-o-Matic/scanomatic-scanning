@@ -36,7 +36,6 @@ packages = [
     "scanomatic.models.factories",
     "scanomatic.io",
     "scanomatic.server",
-    "scanomatic.util",
     "scanomatic.ui_server"
 ]
 

@@ -15,10 +15,8 @@ import json
 # PREPARING INSTALLATION
 #
 
-package_dependencies = [
-    'argparse', 'matplotlib', 'multiprocessing', 'odfpy',
-    'numpy', 'sh', 'nmap', 'configparse', 'skimage',
-    'uuid', 'PIL', 'scipy', 'setproctitle', 'psutil', 'flask', 'requests', 'pandas']
+# Defined in requirements.in etc.
+package_dependencies = []
 
 data_files = []
 

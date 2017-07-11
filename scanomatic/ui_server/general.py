@@ -3,7 +3,6 @@ import os
 import re
 from StringIO import StringIO
 import io
-from scipy.misc import imread
 from itertools import chain
 from flask import (
     send_file, jsonify, render_template)
@@ -18,7 +17,6 @@ from scanomatic.io.app_config import Config
 from scanomatic.io.paths import Paths
 from scanomatic.io.logger import Logger, parse_log_file
 from scanomatic.models.factories.scanning_factory import ScanningModelFactory
-from scipy.misc import toimage
 from scanomatic.models.fixture_models import (
     GrayScaleAreaModel, FixturePlateModel)
 
@@ -308,17 +306,6 @@ def serve_zip_file(zip_name, *file_list):
                      attachment_filename=str(zip_name))
 
 
-def serve_pil_image(pil_img):
-    img_io = StringIO()
-    pil_img.save(img_io, 'JPEG', quality=70)
-    img_io.seek(0)
-    return send_file(img_io, mimetype='image/jpeg')
-
-
-def serve_numpy_as_image(data):
-    return serve_pil_image(toimage(data))
-
-
 def get_fixture_image_by_name(name, ext="tiff"):
 
     fixture_file = Paths().get_fixture_path(name)
@@ -350,45 +337,6 @@ def remove_pad_decode_base64(data):
 
     remainder = len(data) % 4
     return base64.decodestring(data[:-remainder if remainder else 4])
-
-
-def get_image_data_as_array(image_data, reshape=None):
-
-    if isinstance(image_data, StringTypes):
-        stream = io.StringIO()
-        stream.write(image_data)
-        stream.flush()
-        stream.seek(0)
-        try:
-            return imread(stream)
-        except IOError:
-            try:
-                s = pad_decode_base64(image_data)
-            except:
-                s = remove_pad_decode_base64(image_data)
-            stream = io.StringIO()
-            stream.write(s)
-            stream.flush()
-            stream.seek(0)
-            return imread(stream)
-    elif isinstance(image_data, list):
-        if reshape is None:
-            return np.array(image_data)
-        else:
-            return np.array(image_data).reshape(reshape)
-    elif isinstance(image_data, file) or isinstance(image_data, FileStorage):
-        return imread(image_data)
-
-    else:
-        return image_data
-
-
-def get_fixture_image_from_data(name, image_data):
-
-    fixture = FixtureImage(reference_overwrite_mode=True)
-    fixture.name = name
-    fixture.set_image(image=get_image_data_as_array(image_data))
-    return fixture
 
 
 def usable_markers(markers, image):

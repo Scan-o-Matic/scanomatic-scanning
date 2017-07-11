@@ -10,10 +10,8 @@ import scanomatic.io.logger as logger
 from scanomatic.server.server import Server
 from scanomatic.server.stoppable_rpc_server import Stoppable_RPC_Server
 import scanomatic.generics.decorators as decorators
-from scanomatic.models.factories.scanning_factory import ScanningModelFactory, ScannerFactory
-from scanomatic.models.factories.analysis_factories import AnalysisModelFactory
-from scanomatic.models.factories.features_factory import FeaturesFactory
-from scanomatic.models.factories.compile_project_factory import CompileProjectFactory
+from scanomatic.models.factories.scanning_factory import (
+    ScanningModelFactory, ScannerFactory)
 import scanomatic.models.rpc_job_models as rpc_job_models
 from scanomatic.io.rpc_client import sanitize_communication
 
@@ -367,7 +365,6 @@ class InterfaceBuilder(SingeltonOneInit):
         #
         #     return False
 
-
     @_verify_admin
     def _server_create_scanning_job(self, user_id, scanning_model):
 
@@ -419,24 +416,6 @@ class InterfaceBuilder(SingeltonOneInit):
             return False
 
         return sanitize_communication(_SOM_SERVER.enqueue(scanning_model, rpc_job_models.JOB_TYPE.Scan))
-
-    @_verify_admin
-    def _server_create_compile_project_job(self, user_id, compile_project_model):
-
-        global _SOM_SERVER
-
-        compile_project_model = CompileProjectFactory.create(**compile_project_model)
-
-        if not CompileProjectFactory.validate(compile_project_model):
-
-            _report_invalid(
-                _SOM_SERVER.logger,
-                CompileProjectFactory,
-                compile_project_model,
-                "Request compile project")
-            return False
-
-        return sanitize_communication(_SOM_SERVER.enqueue(compile_project_model, rpc_job_models.JOB_TYPE.Compile))
 
     @_verify_admin
     def _server_remove_from_queue(self, user_id, job_id):
@@ -587,69 +566,3 @@ class InterfaceBuilder(SingeltonOneInit):
 
         global _SOM_SERVER
         return sanitize_communication(_SOM_SERVER.scanner_manager.fixtures)
-
-    @_verify_admin
-    def _server_create_analysis_job(self, user_id, analysis_model):
-        """Enques a new analysis job.
-
-        Parameters
-        ==========
-
-        userID : str
-            The ID of the user requesting to create a job.
-            This must match the current ID of the server admin or
-            the request will be refused.
-            **NOTE**: If using a rpc_client from scanomatic.io the client
-            will typically prepend this parameter
-
-        analysis_model : dict
-            A dictionary representation of a scanomatic.models.analysis_model.AnalysisModel
-
-        Returns
-        =======
-
-        bool
-            Success of putting job in queue
-        """
-
-        global _SOM_SERVER
-
-        analysis_model = AnalysisModelFactory.create(**analysis_model)
-        if not AnalysisModelFactory.validate(analysis_model):
-            _report_invalid(_SOM_SERVER.logger, AnalysisModelFactory, analysis_model, "Request analysis")
-            return False
-
-        return sanitize_communication( _SOM_SERVER.enqueue(analysis_model, rpc_job_models.JOB_TYPE.Analysis))
-
-    @_verify_admin
-    def _server_create_feature_extract_job(self, user_id, feature_extract_model):
-        """Enques a new feature extraction job.
-
-        Parameters
-        ==========
-
-        userID : str
-            The ID of the user requesting to create a job.
-            This must match the current ID of the server admin or
-            the request will be refused.
-            **NOTE**: If using a rpc_client from scanomatic.io the client
-            will typically prepend this parameter
-
-
-        feature_extract_model : dict
-            A dictionary representation of scanomatic.models.features_model.FeaturesModel
-
-        Returns
-        =======
-            bool.   ``True`` if job request was successfully enqueued, else
-                    ``False``
-        """
-
-        global _SOM_SERVER
-
-        feature_extract_model = FeaturesFactory.create(**feature_extract_model)
-        if not FeaturesFactory.validate(feature_extract_model):
-            _report_invalid(_SOM_SERVER.logger, FeaturesFactory, feature_extract_model, "Request feature extraction")
-            return False
-
-        return sanitize_communication(_SOM_SERVER.enqueue(feature_extract_model, rpc_job_models.JOB_TYPE.Features))

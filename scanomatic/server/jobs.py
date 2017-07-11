@@ -12,10 +12,7 @@ import scanomatic.io.logger as logger
 import scanomatic.io.paths as paths
 from scanomatic.models.factories.rpc_job_factory import RPC_Job_Model_Factory
 import scanomatic.models.rpc_job_models as rpc_job_models
-import scanomatic.server.phenotype_effector as phenotype_effector
-import scanomatic.server.analysis_effector as analysis_effector
 import scanomatic.server.scanning_effector as scanning_effector
-import scanomatic.server.compile_effector as compile_effector
 import scanomatic.server.rpcjob as rpc_job
 from scanomatic.generics.singleton import SingeltonOneInit
 from scanomatic.io import scanner_manager
@@ -77,11 +74,6 @@ class Jobs(SingeltonOneInit):
         else:
             self._logger.warning("Can't delete job {0} as it does not exist, I only know of {2}".format(
                 job, self._jobs.keys()))
-
-    @property
-    def active_compile_project_jobs(self):
-
-        return [job for job in self.active_jobs if job.type is rpc_job_models.JOB_TYPE.Compile]
 
     @property
     def active_jobs(self):
@@ -237,21 +229,10 @@ class Jobs(SingeltonOneInit):
 
         :type job: scanomatic.models.rpc_job_models.RPCjobModel
         """
-        if job.type is rpc_job_models.JOB_TYPE.Features:
 
-            return phenotype_effector.PhenotypeExtractionEffector
-
-        elif job.type is rpc_job_models.JOB_TYPE.Analysis:
-
-            return analysis_effector.AnalysisEffector
-
-        elif job.type is rpc_job_models.JOB_TYPE.Scan:
+        if job.type is rpc_job_models.JOB_TYPE.Scan:
 
             return scanning_effector.ScannerEffector
-
-        elif job.type is rpc_job_models.JOB_TYPE.Compile:
-
-            return compile_effector.CompileProjectEffector
 
         else:
 

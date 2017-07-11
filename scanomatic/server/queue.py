@@ -103,8 +103,6 @@ class Queue(SingeltonOneInit):
         job_type = self.__next_priority_job_type
         if self._has_job_of_type(job_type):
             jobs = list(self._get_job_by_type(job_type))
-            if job_type is rpc_job_models.JOB_TYPE.Compile:
-                jobs = self._get_allowed_compile_project_jobs(jobs)
 
             ordered_jobs = sorted(jobs, key=lambda job: job.priority)
             self._logger.info("The available jobs of type {0} are queued as {1}".format(
@@ -114,24 +112,6 @@ class Queue(SingeltonOneInit):
         else:
             self._logger.info("No {0} jobs".format(job_type))
         return None
-
-    def _get_allowed_compile_project_jobs(self, queued_jobs):
-
-        def _start_condition_met(this_job):
-            if this_job.content_model.start_condition in self:
-                return False
-
-            for active_job in self._jobs.active_compile_project_jobs:
-
-                if active_job.id == this_job.content_model.start_condition:
-
-                    self._logger.info("Can't launch job {0} becase of job {1}".format(
-                        (this_job, this_job.id), (active_job, active_job.id)))
-                    return False
-
-            return True
-
-        return [job for job in queued_jobs if _start_condition_met(job)]
 
     @property
     def __next_priority_job_type(self):

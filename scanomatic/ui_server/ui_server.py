@@ -3,7 +3,8 @@ import requests
 import glob
 import time
 import webbrowser
-from flask import Flask, request, send_from_directory, redirect, jsonify, render_template
+from flask import (
+    Flask, request, send_from_directory, redirect, jsonify, render_template)
 from flask_cors import CORS
 
 from socket import error
@@ -15,7 +16,6 @@ from scanomatic.io.logger import Logger, LOG_RECYCLE_TIME
 from scanomatic.io.paths import Paths
 from scanomatic.io.power_manager import POWER_MANAGER_TYPE
 from scanomatic.io.rpc_client import get_client
-from scanomatic.models.compile_project_model import COMPILE_ACTION
 from scanomatic.models.factories.scanning_factory import ScanningModelFactory
 from scanomatic.io.backup import backup_file
 

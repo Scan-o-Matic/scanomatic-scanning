@@ -215,20 +215,6 @@ class Paths(SingeltonOneInit):
         return self.project_compilation_from_scanning_pattern.format(
             os.path.join(scan_model.directory_containing_project, scan_model.project_name, scan_model.project_name))
 
-    def get_project_compile_path_from_compile_model(self, compile_model):
-        """
-
-        :type compile_model: scanomatic.models.compile_project_model.CompileInstructionsModel
-        :rtype : str
-        """
-
-        if os.path.isdir(compile_model.path):
-
-            return self.project_compilation_pattern.format(
-                self.get_project_directory_name_with_file_prefix_from_path(compile_model.path))
-
-        return compile_model.path
-
     @staticmethod
     def get_project_directory_name_with_file_prefix_from_path(path):
 

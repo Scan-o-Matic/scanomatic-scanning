@@ -10,13 +10,11 @@ from scanomatic.models.rpc_job_models import JOB_TYPE
 from scanomatic.models.scanning_model import SCAN_CYCLE, SCAN_STEP, COMPILE_STATE, ScanningModelEffectorData
 from scanomatic.models.factories.scanning_factory import ScanningModelFactory
 from scanomatic.models.factories.rpc_job_factory import RPC_Job_Model_Factory
-from scanomatic.models.compile_project_model import COMPILE_ACTION, FIXTURE
 from scanomatic.io import scanner_manager
 from scanomatic.io import sane
 from scanomatic.io import paths
 from threading import Thread
 import scanomatic.io.rpc_client as rpc_client
-from scanomatic.models.factories import compile_project_factory
 from scanomatic.io.app_config import Config as AppConfig
 
 JOBS_CALL_SET_USB = "set_usb"
@@ -105,15 +103,6 @@ class ScannerEffector(proc_effector.ProcessEffector):
             paths_object.experiment_scan_image_pattern)
 
         self._scanner = sane.SaneBase(scan_mode=self._scanning_job.mode, model=self._scanning_job.scanner_hardware)
-
-        self._scanning_effector_data.compile_project_model = compile_project_factory.CompileProjectFactory.create(
-            compile_action=COMPILE_ACTION.Initiate if self._scanning_job.number_of_scans > 1
-            else COMPILE_ACTION.InitiateAndSpawnAnalysis,
-            path=paths_object.get_original_compilation_path_from_scan_model(self._scanning_job),
-            fixture_type=FIXTURE.Global,
-            fixture_name=self._scanning_job.fixture)
-
-        self._scanning_effector_data.compile_project_model.images = []
 
         scan_project_file_path = os.path.join(
             self._project_directory,
@@ -242,14 +231,6 @@ class ScannerEffector(proc_effector.ProcessEffector):
         if self._job_completed and self._scanning_effector_data.current_cycle_step == SCAN_CYCLE.Wait:
             self._stopping = True
 
-            if self._scanning_effector_data.compilation_state is not COMPILE_STATE.Finalized:
-
-                self._scanning_effector_data.compile_project_model.compile_action = \
-                    COMPILE_ACTION.AppendAndSpawnAnalysis if self._scanning_effector_data.compilation_state is \
-                    COMPILE_STATE.Initialized else COMPILE_ACTION.InitiateAndSpawnAnalysis
-
-                self._do_request_project_compilation()
-
             raise StopIteration
         else:
             return self._scanning_effector_data.current_cycle_step
@@ -348,8 +329,6 @@ Scan-o-Matic""", self._scanning_job)
             if self._scanning_effector_data.scan_success:
                 self._logger.info("Completed scanning image {0} located {1}".format(
                     self.current_image, self._scanning_effector_data.current_image_path))
-                self._add_scanned_image(self.current_image, self._scanning_effector_data.current_scan_time,
-                                        self._scanning_effector_data.current_image_path)
 
                 if self._scanning_effector_data.warned_scanner_error:
                     self._scanning_effector_data.warned_scanner_error = False
@@ -543,7 +522,6 @@ Scan-o-Matic""", self._scanning_job)
 
     def _removed_current_image(self):
 
-            del self._scanning_effector_data.compile_project_model.images[-1]
             try:
                 os.remove(self._scanning_effector_data.current_image_path)
             except OSError:
@@ -622,47 +600,8 @@ Scan-o-Matic""", self._scanning_job)
         return SCAN_STEP.NextMajor
 
     def _do_request_project_compilation(self):
-        """Requests compile project if there was a fixture given.
-
-                If it is the first request of compilation, the COMPILE_ACTION is set to initiate from
-                the setup-method.
+        """Placeholder to keep pattern with full SoM workings
         """
-        if self._scanning_job.fixture and self._scanning_effector_data.compilation_state is not COMPILE_STATE.Finalized:
-
-            self._scanning_effector_data.compile_project_model.email = self._scanning_job.email \
-                if self._scanning_effector_data.compile_project_model.compile_action in \
-                (COMPILE_ACTION.AppendAndSpawnAnalysis, COMPILE_ACTION.InitiateAndSpawnAnalysis) else []
-
-            compile_job_id = self._rpc_client.create_compile_project_job(
-                compile_project_factory.CompileProjectFactory.to_dict(
-                    self._scanning_effector_data.compile_project_model))
-
-            if compile_job_id:
-
-                if self._scanning_effector_data.compile_project_model.compile_action in \
-                        (COMPILE_ACTION.AppendAndSpawnAnalysis, COMPILE_ACTION.InitiateAndSpawnAnalysis):
-
-                    self._scanning_effector_data.compilation_state = COMPILE_STATE.Finalized
-                else:
-                    self._scanning_effector_data.compilation_state = COMPILE_STATE.Initialized
-
-                # Images start at 0, next to last has index total - 2
-                next_image_is_last = self._scanning_job.number_of_scans - 2 == \
-                    self._scanning_effector_data.current_image
-
-                if next_image_is_last:
-                    self._scanning_effector_data.compile_project_model.compile_action = \
-                        COMPILE_ACTION.AppendAndSpawnAnalysis
-                else:
-                    self._scanning_effector_data.compile_project_model.compile_action = COMPILE_ACTION.Append
-                self._scanning_effector_data.compile_project_model.start_condition = compile_job_id
-                while self._scanning_effector_data.compile_project_model.images:
-                    self._scanning_effector_data.compile_project_model.images.pop()
-                self._logger.info("Job {0} created compile project job".format(self._scanning_job.id))
-            else:
-                self._logger.warning("Failed to create a compile project job, refused by server")
-        else:
-            self._logger.info("Not enqueing any project compilation since no fixture used")
         return SCAN_STEP.NextMajor
 
     def _do_scan(self):
@@ -706,10 +645,3 @@ Scan-o-Matic""", self._scanning_job)
         if scanner_model:
             self._scanner.model = scanner_model
         self._scanning_effector_data.usb_port = port
-
-    def _add_scanned_image(self, index, time_stamp, path):
-
-        image_model = compile_project_factory.CompileImageFactory.create(
-            index=index, time_stamp=time_stamp, path=path)
-
-        self._scanning_effector_data.compile_project_model.images.append(image_model)

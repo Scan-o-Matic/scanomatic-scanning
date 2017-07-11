@@ -1,13 +1,8 @@
 import scanomatic.models.rpc_job_models as rpc_job_models
 from scanomatic.generics.abstract_model_factory import AbstractModelFactory
 from scanomatic.generics.model import Model
-from scanomatic.models.factories.scanning_factory import ScanningModel, ScanningModelFactory
-from scanomatic.models.factories.analysis_factories import AnalysisModelFactory
-from scanomatic.models.analysis_model import AnalysisModel
-from scanomatic.models.factories.compile_project_factory import CompileProjectFactory
-from scanomatic.models.compile_project_model import CompileInstructionsModel
-from scanomatic.models.features_model import FeaturesModel
-from scanomatic.models.factories.features_factory import FeaturesFactory
+from scanomatic.models.factories.scanning_factory import (
+    ScanningModel, ScanningModelFactory)
 from types import StringTypes
 
 
@@ -15,9 +10,6 @@ class RPC_Job_Model_Factory(AbstractModelFactory):
 
     MODEL = rpc_job_models.RPCjobModel
     _SUB_FACTORIES = {ScanningModel: ScanningModelFactory,
-                      AnalysisModel: AnalysisModelFactory,
-                      CompileInstructionsModel: CompileProjectFactory,
-                      FeaturesModel: FeaturesFactory
                       }
     STORE_SECTION_HEAD = ('id',)
     STORE_SECTION_SERIALIZERS = {
@@ -47,7 +39,7 @@ class RPC_Job_Model_Factory(AbstractModelFactory):
     def _validate_id(cls, model):
 
         if isinstance(model.id, StringTypes):
-    
+
             return True
 
         return model.FIELD_TYPES.id

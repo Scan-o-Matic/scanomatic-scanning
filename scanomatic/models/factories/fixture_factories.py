@@ -33,7 +33,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if model.plate >= 0:
             return True
@@ -45,7 +45,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if len(model.pinning) == 2 and all(isinstance(v, int) for v in model.pinning):
             return True
@@ -57,7 +57,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if model.delta_x > 0:
             return True
@@ -69,7 +69,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if model.delta_y > 0:
             return True
@@ -81,7 +81,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if model.center_x > 0:
             return True
@@ -93,7 +93,7 @@ class GridHistoryFactory(AbstractModelFactory):
 
         """
 
-        :type model: scanomatic.models.analysis_model.GridHistoryModel
+        :type model: scanomatic.models.fixture_models.GridHistoryModel
         """
         if model.center_y > 0:
             return True

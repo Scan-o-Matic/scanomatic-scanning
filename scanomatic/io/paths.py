@@ -95,7 +95,6 @@ class Paths(SingeltonOneInit):
             self.fixtures, self.fixture_image_file_rel_pattern)
         self.fixture_tmp_scan_image = \
             self.fixture_image_file_pattern.format(".tmp")
-        self.fixture_grid_history_pattern = "{0}.grid.history"
 
         self.log = os.path.join(self.root, "logs")
         Paths._make_directory(self.log)
@@ -134,7 +133,6 @@ class Paths(SingeltonOneInit):
             self.ccc_folder, "{0}.external_data.{1}"
         )
         self.analysis_run_log = 'analysis.log'
-        self.analysis_model_file = 'analysis.model'
 
         self.experiment_local_fixturename = \
             self.fixture_conf_file_rel_pattern.format("fixture")

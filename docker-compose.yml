@@ -2,4 +2,6 @@ scanomatic:
     build: .
     ports:
         - 5000:5000
-
+    privileged: true
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
